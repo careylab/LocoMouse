@@ -1,0 +1,73 @@
+Sorry for the sparse documentation, this will be amended at a later date.
+
+
+
+Owing to how matlab handles sparse matrixes, i.e. zeros are ignored,
+this code performs max sum belief propagation (see papers by Werner
+and Schlesinger) and not the min sum BP described in the paper. This
+ may seem a little weird, but when I used min sum, you would indicate
+ that a particular pairwise transition should be ignored by setting it 
+to a better value than costs you don't want to ignore.
+
+If you are still hopelessly stuck after reading this documentation you
+ can email me at chrisr@eecs.qmul.ac.uk and I'll try to clarify stuff
+further.
+
+
+
+Before you do that, run 
+
+mex match2nd.cpp
+
+ from matlab or octave to compile the code
+
+typing match2nd should then bring up a brief list of parameters.
+
+match2nd should be called with the arguments:
+
+M = match2nd (cell(unary), cell(pairwise) cell(tertiary),no_occluded_states, tie_breaker)
+
+ 
+
+cell(unary) is a cell of length frames, where each element of the t^th
+cell contains a dense matrix of unary potentials of size objects *
+locations(in frame t), this is the likelihood cost of assigning a
+particular object to a particular location in the current frame.
+
+
+
+cell(pairwise) is a cell of length frames-1, where each element of the
+cell contains a *sparse* matrix of size locations(in frame t) by
+locations(in frame t-1) . Holes in the sparse matrix, i.e. unset zero
+elements indicate impossible transitions that can be ignored by the
+algorithm.  I'm not performing any sanity checking here, so negative 
+values of elements of the sparse matrix explicitly set to 0 may be 
+transitioned to, and this can cause surprising results.
+
+ cell(tertiary) is a cell of length frames-2, where each element of the
+ cell contains a dense vector of at least the length of valid
+ transitions over 3 frames (this means you can use a large vector of 0s
+to perform BP without tertiary potentials). 
+
+cell(tertiary) should be
+ordered using dictionary order.
+i.e. something like this, 
+1 1 1 
+1 1 2 1 2 1 
+1 2 2 2 1 1 
+minus the invalid transitions indicated by 0 elements of the pairwise
+matrixes. 
+
+Occluded_states is number of states that are occluded and do not make
+use of exclusion constraints. The occluded states occur at the end of
+the set of states i.e.  [l_1 l_2 l_3 ... o_1 _2]
+
+The method has some trouble with ties in the absence of unary
+potentials, to resolve this in sports tracking, you should explicitly
+ set the location of players in at least one frame (e.g. the first),
+although you do not need to set their location in the same frame. If 
+this is not possible, as in the surveillance applications, then the 
+potential tie_resolution biases solutions towards the proposal made by
+ earlier object tracks. The results in the paper were obtained by
+ setting tie_breaker to 0 in all applications except surveillance, and
+ Inf in the final case.
