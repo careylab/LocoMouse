@@ -12,28 +12,28 @@ function flip = checkMouseSide(vid,Bkg,N)
 
 if ischar(vid)
     vid = VideoReader(vid);
-elseif isobject(vid)
-    if ~strcmpi(get(vid,'Type'),'VideoReader')
-        error('vid must be a VideoReader structure or the path to a video');
-    end
+elseif ~isa(vid,'VideoReader') % DE you can directly check
+	error('vid must be a VideoReader structure or the path to a video');
 end
 
 if ischar(Bkg)
     Bkg = imread(Bkg);
 end
 
+NumberOfFrames = vid.Duration*vid.FrameRate;
+
 if ~exist('N','var')
-    N = min(10,vid.NumberOfFrames);
+    N = min(10,NumberOfFrames);
 end
 
-if N >= vid.NumberOfFrames
-%     N = vid.NumberOfFrames;
+if N >= NumberOfFrames
+%     N = NumberOfFrames;
     step = 1;
 else
-    step = ceil(vid.NumberOfFrames/N); % No need to be exact...
+    step = ceil(NumberOfFrames/N); % No need to be exact...
 end
 
-step_vec = 1:step:vid.NumberOfFrames;
+step_vec = 1:step:NumberOfFrames;
 Nsteps = length(step_vec);
 C = NaN(1,Nsteps);
 x_ind = 1:vid.Width;

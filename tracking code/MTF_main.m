@@ -1,7 +1,7 @@
 % Track collections of videos as they come from the setup.
 
 %% User input:  check paths
-locomouse_path = 'path\to\LocoMouse';
+locomouse_path = 'C:\Users\Dennis\Documents\GitHub\LocoMouse';
 session_path = fullfile(locomouse_path,'movies'); % path where videos for tracking are stored
 output_path = fullfile(locomouse_path,'output'); % output path for tracking files
 model_path = fullfile(locomouse_path,'tracking code','model_01112013.mat');  % path to model file
@@ -14,7 +14,7 @@ skip_undistortion = true; % skip undistortion if images are available
 specific = false;
 
 %make input file structure is compatible (see example movies folder)
-specific_data_list = {{'S1_1_21_2014',{'G6AK4'},{'9'}}};%{'01_11_13_S5',{'G6AE9'},'9'}
+specific_data_list = {'01_11_13_S5',{'G6AE9'},'9'}; %{{'S1_1_21_2014',{'G6AK4'},{'9'}}};%{'01_11_13_S5',{'G6AE9'},'9'}
 
 
 %% Browsing the data:
