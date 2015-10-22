@@ -115,7 +115,7 @@ while st < length(varargin)
 end
 
 
-Nframes = get(vid,'NumberOfFrames');
+Nframes = vid.Duration*vid.FrameRate; % DE 'NumberOfFrames' will be removed in a future release.
 
 if flip
     % flip being on does not mean to flip, but to look for a flip!

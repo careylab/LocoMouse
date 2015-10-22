@@ -32,7 +32,7 @@ for i_s = 1:N_sessions
     
     % Go to session directory
     cd(session_list(i_s).name);
-    find_S = session_list(i_s).name == 'S';
+    find_S = strfind(session_list(i_s).name,'S'); % DE
     session_counter = str2double(session_list(i_s).name(find_S+1:end));
     
     % Navigate the animals:
