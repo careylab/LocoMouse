@@ -1,5 +1,5 @@
-function [] = MTF_saveasures(final_tracks, tracks_tail, seq_name)
-% MTF_saveasures(final_tracks, tail_tracks)
+function [] = MTF_export_figures(final_tracks, tracks_tail, seq_name)
+% MTF_export_figures(final_tracks, tail_tracks)
 %
 % Plots the tracks resulting from the MTF tracker. The default plots are:
 %
