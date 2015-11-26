@@ -1,5 +1,5 @@
-function [] = MTF_export_figures(final_tracks, tracks_tail, seq_name)
-% MTF_export_figures(final_tracks, tail_tracks)
+function [] = MTF_saveasures(final_tracks, tracks_tail, seq_name)
+% MTF_saveasures(final_tracks, tail_tracks)
 %
 % Plots the tracks resulting from the MTF tracker. The default plots are:
 %
@@ -26,7 +26,7 @@ for i_paw = 1:4
 end
 legend(Legend(1:4),'Location','NorthWest');
 set(gcf, 'Position', get(0,'Screensize')); % Maximize figure.
-export_fig(gcf,sprintf('%s_x_vs_t.png',seq_name),'-native');
+saveas(gcf,sprintf('%s_x_vs_t.png',seq_name));
 close(gcf)
 
 % Z vs time for FR FL
@@ -42,7 +42,7 @@ for i_pairs = 1:2
     axis ij tight
 end
 set(gcf, 'Position', get(0,'Screensize')); % Maximize figure.
-export_fig(gcf,sprintf('%s_Time_vs_Z.png',seq_name),'-native');
+saveas(gcf,sprintf('%s_Time_vs_Z.png',seq_name));
 close(gcf)
 
 % Y vs X for tail
@@ -56,6 +56,6 @@ for i_tail = 1:2
 %     axis ij equal tight  
 end
 set(gcf, 'Position', get(0,'Screensize')); % Maximize figure.
-export_fig(gcf,sprintf('%s_%s.png',seq_name,Legend{5}),'-native');
+saveas(gcf,sprintf('%s_%s.png',seq_name,Legend{5}));
 drawnow;
 close(gcf)
