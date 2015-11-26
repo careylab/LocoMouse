@@ -1,55 +1,75 @@
+function [] = browsing_data_structure_dfolder(session_path,output_path,model_path,dist_image_path,distortion_path,error_path,skip_analyzed_videos,skip_undistortion)
 %% Processing data:
 t_overall_start = tic;
-exclude_navigation_dir = {'.','..','GREY','calibration'}; % folders to ignore
-if ~specific
-    session_list = dir(session_path);
-    session_list = session_list(cell2mat({session_list(:).isdir}));
-    N_sessions = length(session_list);
-else
-    N_sessions = length(specific_data_list);
-    snames = cellfun(@(x)(x{1}),specific_data_list,'un',0);
-    session_list = struct('name',snames);
-    clear snames
+fprintf('Looking for model under %s ...',model_path);
+try
+    load(model_path,'model');
+    fprintf(' Found!\n');
+catch
+    fprintf(' Failed!\n');
+    return;
 end
-curr_path = pwd;
+
+fprintf('Looking for calibration file under %s ...',dist_image_path);
+try
+    load(distortion_path,'IDX','mirror_line');
+    fprintf(' Found!\n');
+catch
+    fprintf(' Failed!\n');
+    return;
+end
+
+fprintf('Separating side from bottom view at %d pixels.\n',mirror_line);
+data.mirror_line = mirror_line;
+exclude_navigation_dir = {'.','..','GREY','calibration'}; % folders to ignore
+
+fprintf('Looking for videos under: %s\n',session_path);
+session_list = dir(session_path);
+
+% Make sure only browsing folders...
+session_list = session_list(cell2mat({session_list(:).isdir}));
+N_sessions = length(session_list);
+
+current_path = pwd;
 cd(session_path)
 
 % Loading model and distortion parameters:
-load(model_path,'model');
-load(distortion_path,'IDX','mirror_line');
-data.mirror_line = mirror_line;
 
 % Creating output path:
 if ~exist(output_path,'dir')
     mkdir(output_path);
 end
 
+sessions_exist = false;
+
 for i_s = 1:N_sessions
     % Navigate the session:
     if any(strcmp(session_list(i_s).name,exclude_navigation_dir))
         continue;
     end
-    
+    sessions_exist = true;
+        
     % Go to session directory
+    fprintf('Current session: %s\n',session_list(i_s).name);
     cd(session_list(i_s).name);
     find_S = session_list(i_s).name == 'S';
     session_counter = str2double(session_list(i_s).name(find_S+1:end));
     
     % Navigate the animals:
-    if ~specific
-        animal_list = dir(pwd);
-        animal_list = animal_list(cell2mat({animal_list(:).isdir}));
-        N_animals = length(animal_list);
-    else
-        N_animals = length(specific_data_list{i_s}{2});
-        animal_list = struct('name',specific_data_list{i_s}{2});
-    end
+    animal_list = dir(pwd);
+    animal_list = animal_list(cell2mat({animal_list(:).isdir}));
+    N_animals = length(animal_list);
+    animals_exist = false;
     
     for i_a = 1:N_animals
         if any(strcmp(animal_list(i_a).name,exclude_navigation_dir))
             continue;
         end
+        animals_exist = true;
+        
+        fprintf('Current animal: %s\n',animal_list(i_a).name);
         cd(animal_list(i_a).name);
+        
         bg_name = dir([pwd filesep '*.png']);
         if isempty(bg_name)
             warning('There is no background image in %s. Computing background using median.',animal_list(i_a).name);
@@ -63,27 +83,8 @@ for i_s = 1:N_sessions
         
         % Go to animal directory:
         video_list = dir('*.avi');
-        
-        if ~specific
-            N_videos = length(video_list);
-        else
-            N_videos = length(video_list);
-            kp = false(1,N_videos);
-            for i_v = 1:N_videos
-                % Looking for the trial name
-                tpos = find(video_list(i_v).name == 'T',1,'last');
-                dot_pos = find(video_list(i_v).name == '.',1,'last');
-                if ~isempty(tpos)
-                    num = video_list(i_v).name(tpos+1:dot_pos-1);
-                    match_pos = strcmpi(num,specific_data_list{i_s}{3});
-                    if any(match_pos)
-                        kp(i_v) = true;
-                    end
-                end
-            end
-            video_list = video_list(kp);
-            N_videos = length(video_list);
-        end
+        N_videos = length(video_list);
+        fprintf('%d video(s) found for current animal.\n',N_videos);
         
         %% processing movie
         for i_v = 1:N_videos
@@ -116,9 +117,10 @@ for i_s = 1:N_sessions
                     data.sequence = [];
                 end
                 had_to_track_again = false;
+                
                 if  ~skip_undistortion || isempty(data.sequence)
                     had_to_track_again = true;
-                    %                     try
+
                     fprintf('Extracting images for %s\n',video_list(i_v).name);
                     % If the video has not been corrected yet, we must generate the
                     % images for correction:
@@ -166,11 +168,23 @@ for i_s = 1:N_sessions
                     mkdir('data')
                 end
                 cd('images')
-                % Swing and Stance detection
-                MTF_export_figures(final_tracks,tracks_tail,video_list(i_v).name);
+                % Exporting figures:
+                fprintf('Saving figures of tracking output...');
+                try
+                    MTF_export_figures(final_tracks,tracks_tail,video_list(i_v).name);
+                    fprintf(' Done!\n');
+                catch
+                    fprintf(' Failed!\n');
+                end
                 cd(fullfile('..','data'))
-                save(sprintf(['%s' departure_side '.mat'],name),'final_tracks','tracks_tail','IDX','mirror_line','name');
-                cd(fullfile('..','images'))
+                fprintf('Saving mat file with output...');
+                try
+                    save(sprintf(['%s' departure_side '.mat'],name),'final_tracks','tracks_tail','IDX','mirror_line','name');
+                    fprintf(' Done!\n');
+                catch
+                    fprintf(' Failed!\n');
+                end
+%                 cd(fullfile('..','images'))
 
             catch % error display
                 fprintf('Error while tracking %s. Saving partial results MAT file...',video_list(i_v).name)
@@ -185,5 +199,13 @@ for i_s = 1:N_sessions
         end
         cd(fullfile(session_path,session_list(i_s).name));
     end
+    if ~animals_exist
+        fprintf('No animals were found for current session!\n');
+    end
     cd(session_path);
 end
+
+if ~sessions_exist
+    fprintf('No sessions were found!\n');
+end
+cd(current_path);
