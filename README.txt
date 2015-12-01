@@ -6,6 +6,12 @@ eLife (2015) http://dx.doi.org/10.7554/eLife.07892.
 
 Code written by Joao Fayad (joaofayad@gmail.com).
 
+------------------ PLEASE NOTE -----------------------------------------------
+This version of LocoMouse retains the analysis procedures as used in the 
+cited paper. An updated version (Matlab R2014B and higher) can be found under 
+http://github.com/careylab/LocoMouse_Dev (careylab's development version)
+------------------ Dennis Eckmeier, 2015 ------------------------------------
+
 If you find this code useful, please reference our paper.
 *****************************************************************************
 
