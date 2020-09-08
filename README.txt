@@ -4,6 +4,8 @@ coordination reveals specific deficits in freely walking ataxic mice"
 Machado, Darmohray, Fayad, Marques, and Carey.
 eLife (2015) http://dx.doi.org/10.7554/eLife.07892.
 
+*** if have you questions please contact Ana Machado (ana.machado@neuro.fchampalimaud.org) ***
+
 Code written by Joao Fayad (joaofayad@gmail.com).
 
 ------------------ PLEASE NOTE -----------------------------------------------
