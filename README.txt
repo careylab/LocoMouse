@@ -4,9 +4,9 @@ coordination reveals specific deficits in freely walking ataxic mice"
 Machado, Darmohray, Fayad, Marques, and Carey.
 eLife (2015) http://dx.doi.org/10.7554/eLife.07892.
 
-*** if have you questions please contact Ana Machado (ana.machado@neuro.fchampalimaud.org) ***
+***For questions, suggestions please contact Ana Machado (ana.machado@neuro.fchampalimaud.org)***
 
-Code written by Joao Fayad (joaofayad@gmail.com).
+Code written by Joao Fayad.
 
 ------------------ PLEASE NOTE -----------------------------------------------
 This version of LocoMouse retains the analysis procedures as used in the 
@@ -33,7 +33,7 @@ Please read the following files before using this code:
 the "additional_packages" folder.
 
 --|License & Disclaimer|--
-Copyright (C) 2015  Joao Fayad (joaofayad@gmail.com)
+Copyright (C) 2015  Joao Fayad
  
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
